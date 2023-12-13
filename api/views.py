@@ -5,6 +5,7 @@ from matchprint_api.settings import BASE_DIR as dr
 import cv2
 import fingerprint_enhancer
 import random as d
+from datetime import datetime
 
 def find_best_match(template_images, full_image):
     best_val = -1
@@ -131,13 +132,16 @@ def enhanceImage(request):
             enhanced_image = cv2.bitwise_not(enhanced_image)
             if len(enhanced_image.shape) == 2:
                 enhanced_image = cv2.cvtColor(enhanced_image, cv2.COLOR_GRAY2BGR)
-            output_path = path+"/outimage.png"
+            current_datetime = datetime.now()
+            timestamp_milliseconds = int(current_datetime.timestamp() * 1000)
+            output_path = path+ f"/{timestamp_milliseconds}_outimage.png"
             cv2.imwrite(output_path, enhanced_image)
             full_url = request.get_host()
             output_data = {
                 "Ridges":ridges,
                 "prints_url":full_url+"/media/outimage.png",
                 "msg":"Prints Sucessfully enhanced.",
+                "filename": f"/{timestamp_milliseconds}_outimage.png",
                 "error":False
             }
 
